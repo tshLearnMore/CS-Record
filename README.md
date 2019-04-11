@@ -4,6 +4,8 @@
 
 ## 剑指offer
 剑指offer记录
+练习网站：https://www.nowcoder.com/ta/coding-interviews
+代码记录
 
 ## leetcode
 leetcode练习记录
