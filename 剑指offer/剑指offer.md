@@ -430,10 +430,103 @@ int minNumberInRotateArray(vector<int> rotateArray) {
 例如 a b c e s f c s a d e e 这样的3 X 4 矩阵中包含一条字符串"bcced"的路径，
 但是矩阵中不包含"abcb"路径，因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
 //思路：
+1.外部循环尝试每个位置为起点
+2.实际查找是尝试上下左右四个方向，并将访问过的节点设为true，退出时设为false
+
+bool findPath(char* matrix, bool* state,int x, int y,int rows, int cols, char* str)
+{
+    if (*str == '\0')
+		return true;
+	if (x<0||x>=rows||y<0||y>=cols)
+		return false;
+	if (*str != *(matrix+(x*cols+y)) || *(state+(x*cols+y))==true)
+		return false;
+	*(state+(x*cols+y))=true;
+	bool ret = findPath(matrix,state,x-1,y,rows,cols,str+1);
+	if (!ret)
+		ret = findPath(matrix,state,x+1,y,rows,cols,str+1);
+	if (!ret)
+		ret = findPath(matrix,state,x,y-1,rows,cols,str+1);
+	if (!ret)
+		ret = findPath(matrix,state,x,y+1,rows,cols,str+1);
+	*(state+(x*cols+y))=false;
+	return ret;
+}
+
+bool hasPath(char* matrix, int rows, int cols, char* str)
+{
+	if (matrix==NULL||str==NULL)
+		return false;
+	bool* state = new bool[rows*cols];
+	memset(state,0,rows*cols);
+	for (int i=0;i<rows;i++)
+		for (int j=0;j<cols;j++)
+			if (findPath(matrix,state,i,j,rows,cols,str))
+            {
+                delete[] state;
+                return true;
+            }
+    delete[] state;
+	return false;
+}
+```
+## 机器人的运动范围
+```
+//题目：地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次
+只能向左，右，上，下四个方向移动一格，但是不能进入行坐标和列坐标的数位之和大于k的格子。 
+例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。但是，
+它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+//思路：和上一题思路类似，只是有一个进入条件的判断
+bool judge(int rows,int cols,int thr)
+{
+	int num = 0;
+	while(rows)
+	{
+		num+=rows%10;
+		rows=rows/10;
+	}
+	while(cols)
+	{
+		num+=cols%10;
+		cols=cols/10;
+	}
+	if (thr<num)
+		return false;
+	else
+		return true;
+}
+
+void findPath(vector<vector<bool>>& arr,int rows,int cols,int x,int y,int threshold,int* num)
+{
+	if (x<0||x>=rows||y<0||y>=cols)
+		return ;
+	if (!judge(x,y,threshold) || arr[x][y]==true)
+		return ;
+	arr[x][y]=true;
+	*num = *num + 1;
+	findPath(arr,rows,cols,x-1,y,threshold,num);
+	findPath(arr,rows,cols,x+1,y,threshold,num);
+	findPath(arr,rows,cols,x,y-1,threshold,num);
+	findPath(arr,rows,cols,x,y+1,threshold,num);
+}
+
+int movingCount(int threshold, int rows, int cols)
+{
+	vector<vector<bool>> arr;
+	for (int i=0;i<rows;i++)
+	{
+		vector<bool> temp;
+		for (int j=0;j<cols;j++)
+			temp.push_back(false);
+		arr.push_back(temp);
+	}
+	int num=0;
+	findPath(arr,rows,cols,0,0,threshold,&num);
+	return num;
+}
 
 
 ```
-## 机器人的运动范围
 ## 剪绳子
 ## 二进制中1的个数
 ## 数值的整数次方
