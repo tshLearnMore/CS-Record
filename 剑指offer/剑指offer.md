@@ -68,8 +68,73 @@
    
 # 剑指Offer题解
 ## 赋值运算符函数
+
+```
+//先创建一个临时实例，然后交换临时实例和原来的实例
+CMyString& CMyString::operator =(const CMyString& str)
+{
+	if (this != &str)
+	{
+		CMyString temp(str);
+		
+		char* pTemp = temp.pData_;
+		temp.pData_ = pData_;
+		pData_ = pTemp;
+	}
+	return *this;
+}
+
+```
 ## 实现Singleton模式
+
+```
+//第一种懒汉式单例
+class SingleClass
+{
+public:
+	static SingleClass* GetInstance()
+	{
+		if (!instance)
+			instance = new SingleClass();
+		return instance;
+	}
+
+private:
+	SingleClass(){};
+	static SingleClass *instance;
+};
+
+SingleClass * SingleClass::instance = NULL;
+
+---------------------------------------------
+
+//第二种局部静态变量单例
+class SingleClass
+{
+private:
+	SingleClass() { }
+	SingleClass(const SingleClass &);
+	SingleClass & operator = (const SingleClass &);
+public:
+	static SingleClass* GetInstance()
+	{
+		static SingleClass instance;
+		return &instance;
+		//返回指针。返回引用的话，因为外部可能Singleton singleton = Singleton :: GetInstance();产生一次拷贝
+	}
+};
+
+
+```
+
 ## 数组中重复的数字
+
+```
+//题目描述：在一个长度为n的数组里的所有数字都在0到n-1的范围内。 数组中某些数字是重复的，但不知道有几个数字是重复的。也不知道每个数字重复几次。请找出数组中任意一个重复的数字。 例如，如果输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出是第一个重复的数字2。
+
+
+```
+
 ## 二维数组的查找
 ## 替换空格
 ## 从头到尾打印链表
