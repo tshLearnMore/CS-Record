@@ -528,10 +528,187 @@ int movingCount(int threshold, int rows, int cols)
 
 ```
 ## 剪绳子
+```
+//题目：给你一根长度为n的绳子，请把绳子剪成m段（m、n都是整数，n>1并且m>1），
+每段绳子的长度记为k[0],k[1],,,k[m]。请问k[0]*k[1]*****k[m]可能的最大乘积
+是多少？例如，当绳子的长度是8时，我们把它剪成长度为别为2，3，3，的三段，此时
+得到的最大乘积是18.
+//思路：
+1.动态规划：O(n)2时间和O(n)空间
+在剪第一刀的时候，我们有n-1种可能的选择，即剪出来的长度分别为1，2，，，，
+n-1。因此f(n)=max(f(i)*f(n-i)),其中0<i<n
+2.贪婪算法：O(1)时间和O(1)空间
+
+//动态规划：O(n)2时间和O(n)空间
+int maxCutString(int length)
+{
+	if (length<2)
+		return 0;
+	if (length == 2)
+		return 1;
+	if (length == 3)
+		return 2;
+	vector<int> ivec(length+1,0);
+	ivec[0]=0;
+	ivec[1]=1;
+	ivec[2]=2;
+	ivec[3]=3;
+	for (int i=4;i<=length;i++)
+		for (int j=1;j<=i/2;j++)
+			ivec[i]=max(ivec[i],ivec[j]*ivec[i-j]);
+	return ivec[length];
+}
+
+//贪婪算法：O(1)时间和O(1)空间
+int maxCutString(int length)
+{
+	if (length<2)
+		return 0;
+	if (length == 2)
+		return 1;
+	if (length == 3)
+		return 2;
+	int timesOf3 = length/3;
+	if (length - timesOf3*3 == 1)
+		timesOf3 -= 1;
+	int timesOf2 = (length - timesOf3*3)/2;
+
+	return (int)(pow(3,timesOf3))*int(pow(2,timesOf2));
+}
+```
 ## 二进制中1的个数
+```
+int  NumberOf1(int n) {
+     int count = 0;
+     while (n)//不为0
+     {
+         count++;
+         n = n&(n-1);
+     }
+     return count;
+}
+```
 ## 数值的整数次方
+```
+//题目：给定一个double类型的浮点数base和int类型的整数exponent。求base的
+exponent次方。
+//思路：需要考虑浮点数为0的判断，以及exponent为负数的判断
+
+double PowerCore(double base, int exponent)
+{
+	if (exponent == 0)
+		return 1;
+	double ret = PowerCore(base,exponent>>1);
+	ret *=ret;
+	if (exponent&1 == 1)
+		ret *= base;
+	return ret;
+
+/*上面的更高效
+	double num = 1;
+	for (int i = 0; i < exponent; i++)
+		num *= base;
+	return num;
+*/
+}
+
+double Power(double base, int exponent) {
+	if ( -0.000001 <= base && base <= 0.000001)
+		return 0.0;
+	bool sign = exponent > 0 ? true : false;
+	exponent = abs(exponent);
+	double ret = PowerCore(base,exponent);
+	if (!sign)
+		ret = 1/ret;
+	return ret;
+}
+
+```
 ## 打印从1到最大的n位数
+```
+//题目：输入数字你，按顺序打印出从1到最大的n位十进制数。比如输入3，则打印出
+1、2、3、一直到最大的3位数999
+//思路：1.用数组保存结果 2.递归每一位上的可能值0~9
+
+void PrintNum(vector<int>& ivec)
+{
+	bool bPrint=false;
+	for (int i=0;i<ivec.size();i++)
+	{
+		if (ivec[i]!=0 && !bPrint)
+			bPrint = true;
+		if (bPrint)
+			cout<<ivec[i];
+	}
+
+	cout<<endl;
+}
+
+void PrintCore(int cur, int n, vector<int>& ivec)
+{
+	if (cur==n)
+	{
+		PrintNum(ivec);
+		return;
+	}
+
+	for(int i=0;i<=9;i++)
+	{
+		ivec[cur]=i;
+		PrintCore(cur+1,n,ivec);
+	}
+}
+
+void PrintOneToMax(int n)
+{
+	if (n<=0)
+		return;
+	vector<int> ivec(n,0);
+	PrintCore(0,n,ivec);
+}
+
+```
 ## 删除链表的节点
+```
+//题目1：在O(1)时间内删除链表节点
+给定单向链表的头指针和一个节点指针，定义一个函数在O(1)时间内删除该节点。
+//思路：1.待删除的是头指针 2.待删除的是尾指针 3.待删除的是中间指针
+
+void DeleteNode(ListNode** pHead, ListNode* pToBeDeleted)
+{
+	if (pHead==NULL || *pHead==NULL || pToBeDeleted==NULL)
+		return ;
+	if (*pHead == pToBeDeleted)
+	{//删除的节点是头结点
+		*pHead = pToBeDeleted->next;
+	}
+	else if (pToBeDeleted->next!=NULL)
+	{//删除的节点是中间节点
+		ListNode* temp=pToBeDeleted->next;
+		pToBeDeleted->value = temp->value;
+		pToBeDeleted->next = temp->next;
+		pToBeDeleted = temp;
+	}
+	else
+	{//删除的节点是尾节点
+		ListNode* pre = *pHead;
+		while (pre->next&&pre->next!=pToBeDeleted)
+			pre = pre->next;
+		pre->next=NULL;
+	}
+	delete pToBeDeleted;
+	pToBeDeleted=NULL;
+}
+
+```
+
+```
+//题目2：删除链表中重复的节点
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+//
+
+```
+
 ## 正则表达式匹配
 ## 表示数值的字符串
 ## 调整数组顺序使奇数位于偶数前面
