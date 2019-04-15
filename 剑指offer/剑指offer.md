@@ -704,14 +704,131 @@ void DeleteNode(ListNode** pHead, ListNode* pToBeDeleted)
 
 ```
 //题目2：删除链表中重复的节点
-在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
-//
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，
+返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+//思路：
+1.用一个空的头结点指向链表开头（可能要删除原始表头，有空节点后所有节点能同一处理）
+2.pre指向当前节点，pend指向后一个节点。判断pend的val是否和pre的val相等，来决定
+是否要删除这个节点
+ListNode* deleteDuplication(ListNode* pHead)
+{
+	if (pHead==NULL || pHead->next==NULL)
+		return pHead;
+	ListNode* pre=pHead;
+	ListNode node(-1);
+	ListNode* pNode=&node;
+	pNode->next=pHead;
+	while(pre)
+	{
+		if (pre->next==NULL || (pre->next!=NULL && pre->next->val!=pre->val))
+		{
+			pNode->next=pre;
+			pNode=pre;
+			pre=pre->next;
+		} 
+		else
+		{
+			ListNode* pend=pre->next;
+			while (pend!=NULL&&pend->val==pre->val)
+			{
+				ListNode* tmp = pend;
+				pend=pend->next;
+				delete pend;
+			}
+			pNode->next=pend;
+			delete pre;
+			pre=pend;
 
+		}
+	}
+	return node.next;
+}
 ```
 
 ## 正则表达式匹配
 ## 表示数值的字符串
+```
+//题目：请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。
+例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。 
+但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+//思路：
+根据[+|-][A][.[B]][[+|-]e|EC]公式来判断：A整数部分，B小数部分，C指数部分
+1.判断第一个字符是否是‘+’或‘-’
+2.判断是否有A
+3.判断是否有B部分，要是有'.'跳过
+4.判断是否有C部分，要是有e|E和+|- 跳过
+ps：最后返回值：A或B存在时C部分才有意义并且字符串要正好结束
+bool ScanNum(char** str)
+{
+	char *pos = *str;
+	while(**str >= '0' && **str <= '9' && **str!='\0')
+		(*str)++;
+	return *str > pos;
+}
+
+bool isNumeric(char* string)
+{
+	if (string == NULL)
+		return false;
+
+	if (*string <'0' || *string > '9')
+	{
+		if (*string!='+' && *string!='-')
+			return false;
+		else 
+			string++;
+	}
+
+	bool A = ScanNum(&string);
+
+	bool B =true;
+	if (*string=='.')
+	{
+		string++;
+		B = ScanNum(&string);
+	}
+
+	bool C = true;
+	if (*string=='e'||*string=='E')
+	{
+		string++;
+		if (*string=='+' || *string=='-')
+			string++;
+		C=ScanNum(&string);
+	}
+	return (A||B)&&C&&(*string=='\0');
+}
+
+```
 ## 调整数组顺序使奇数位于偶数前面
+```
+//题目：输入一个整数数组，实现一个函数来调整该数组中数字的顺序，
+使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分
+//思考：
+相对位置可变：可以使用快排的partion来使数组根据某个条件分成两部分
+相对位置不变：可以采用类似冒泡排序实现
+
+//奇数和奇数，偶数和偶数之间的相对位置会变化
+void reOrderArray(vector<int> &array) {
+	int pos=-1;
+	for (int i=0;i<array.size();i++)
+	{
+		if (array[i]%2==1)
+			if (++pos!=i)
+				swap(array[pos],array[i]);
+	}
+}
+
+//奇数和奇数，偶数和偶数之间的相对位置不变
+void reOrderArray(vector<int> &array) {
+	//类似冒泡算法
+	for (int i = 0; i < array.size();i++)
+		for (int j = array.size() - 1; j>i;j--)
+			if (array[j] % 2 == 1 && array[j - 1]%2 == 0) //前偶后奇交换
+				swap(array[j], array[j-1]);
+}
+
+```
 ## 链表中倒数第k个节点
 ## 链表中环的入口节点
 ## 反转链表
