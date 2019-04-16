@@ -830,6 +830,27 @@ void reOrderArray(vector<int> &array) {
 
 ```
 ## 链表中倒数第k个节点
+```
+//思路：双指针pBegin先走k步，然后pBehind再和pBegin一起走，直到pBegin指向最后
+ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
+	if (pListHead==NULL||k==0)
+		return NULL;
+	ListNode* pBegin=pListHead;
+	ListNode* pBehind=pListHead;
+	for (int i=0;i<k;i++)
+	{
+		if(pBegin==NULL)
+			return NULL;
+		pBegin=pBegin->next;
+	}
+	while (pBegin!=NULL)
+	{
+		pBegin=pBegin->next;
+		pBehind=pBehind->next;
+	}
+	return pBehind;
+}
+```
 ## 链表中环的入口节点
 ## 反转链表
 ## 合并两个排序的链表
