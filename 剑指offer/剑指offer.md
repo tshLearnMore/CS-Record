@@ -860,6 +860,36 @@ ListNode* FindKthToTail(ListNode* pListHead, unsigned int k) {
 ## 顺时针打印矩阵
 ## 包含min函数的栈
 ## 栈的压入弹出序列
+```
+//题目：输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否可能
+为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如序列1,2,3,4,5是某栈的压入顺序，
+序列4,5,3,2,1是该压栈序列对应的一个弹出序列，但4,3,5,1,2就不可能是该压栈序列的弹出序列。
+（注意：这两个序列的长度是相等的）
+//思路：
+1.stack保存数据，当栈顶元素不等于popV[j]或栈为空时，将pushV[i]压栈
+2.当栈顶元素等于popV[j]时，出栈。
+
+bool IsPopOrder(vector<int> pushV,vector<int> popV) {
+	stack<int> istack;
+	if (pushV.size()!=popV.size())
+		return false;
+	int i=0,j=0;
+	while (i<pushV.size()&&j<pushV.size())
+	{
+		while ((istack.empty()||istack.top()!=popV[j])&&i<pushV.size())
+		{
+			istack.push(pushV[i++]);
+		}
+		while (!istack.empty()&&istack.top()==popV[j])
+		{
+			istack.pop();
+			j++;
+		}
+	}
+	return istack.empty();
+}
+
+```
 ## 从上到下打印二叉树
 ## 二叉搜索树的后序遍历序列
 ## 二叉树中和为某一值的路径
